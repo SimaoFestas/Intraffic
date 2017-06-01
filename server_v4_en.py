@@ -3,12 +3,15 @@ import string
 import sqlite3
 import cherrypy
 import json
-
+import globalultrapassar
+    
 @cherrypy.expose
+
 class StringGeneratorWebService(object):
 	@cherrypy.tools.accept(media='text/plain')
 
 	def GET(self,delete_pos, info,id='',alerts='',street='',city='', district='', country='', precision='', latitude='',longitude='',ddatetime_start='',ddatetime_end='',status=''):
+		
 		conn = sqlite3.connect('database_v4_en.db')
 		c=conn.cursor()
 		if info == 'getall':
@@ -27,6 +30,15 @@ class StringGeneratorWebService(object):
 			x = c.execute("update Datalog set status='solved' where AlertNr=?",(delete_pos,))
 		#return alerts unsolved
 		#http://localhost:8080/?&info=site	
+
+		elif info=='ultrapassagem':
+			if(status=='nao'):
+				#não é possivel ultrapassar
+				globalultrapassar.ultrapassar='nao'
+			if(status=='sim'):
+				globalultrapassar.ultrapassar='sim'
+			return globalultrapassar.ultrapassar
+
 		elif info == 'site':
 			x = c.execute("select * from Datalog where status LIKE ?", ('unsolved',)).fetchall()
 			a=json.dumps(x)

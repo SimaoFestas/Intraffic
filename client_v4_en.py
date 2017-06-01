@@ -31,7 +31,7 @@ def printInfo(text):
 		print("No data")
 	else:
 		x = text.split('], [')
-		if len(x) == 1:
+		if len(x) == 1
 			print('\n   ' + text)
 		else:
 			z = x[0].split('[[')
