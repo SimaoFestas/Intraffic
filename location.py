@@ -13,8 +13,8 @@ s = requests.Session()
 def generate_random_data(lat, lon, num_rows):
 	#Get random coordinates near lat and lon
     for _ in range(num_rows):
-        dec_lat = random.random()/100
-        dec_lon = random.random()/100
+        dec_lat = random.random()/10
+        dec_lon = random.random()/10
         return lat+dec_lon,lon+dec_lat 
 
 def geolocation():
@@ -68,7 +68,7 @@ def geolocation_fake_gps(lati,longi):
 	street = s.get(url) 
 
 	status = street.json()['status']
-	r = street.json()['results'] 
+	r = street.json()
 	if(status=='ZERO_RESULTS'):
 		#print('ZERO_RESULTS')		
 		error='1'
@@ -80,39 +80,29 @@ def geolocation_fake_gps(lati,longi):
 		return street_name,city,district,country,latitude,longitude,fake_accuracy,error
 	
 	fake_accuracy = 10
-	street_name = r[0]['formatted_address'] # Address
 
-	scountry = street_name.split(', ')
-	country = scountry[len(scountry)-1]
+	for y in range(0,1):
+		t=[item['address_components'][0] for item in r['results']]
+		
+		l=len(t)
+		
+		
+		for x in range(l):
+			
+			if(t[x]['types']==['administrative_area_level_1', 'political']):
+				district=t[x]['long_name']	
+				d=district.split(' ')
+				district=d[0]
 
-	t = len(r[0]['address_components']) #Array length
+			if(t[x]['types']==['administrative_area_level_2', 'political']):
+				city=t[x]['long_name']
 
-	if t == 10:
-		city = r[0]['address_components'][2]['long_name']
-		district = r[0]['address_components'][5]['long_name']
-	if t == 9:
-		city = r[0]['address_components'][2]['long_name']
-		district = r[0]['address_components'][5]['long_name']
-		#country = r[0]['address_components'][5]['long_name']
-	if t == 8:
-		city = r[0]['address_components'][2]['long_name']
-		district = r[0]['address_components'][4]['long_name']
-	if t == 7:
-		city = r[0]['address_components'][2]['long_name']
-		district = r[0]['address_components'][3]['long_name']
-	if t == 6:
-		city = r[0]['address_components'][1]['long_name'] 
-		district = r[0]['address_components'][3]['long_name']
+			if(t[x]['types']==['route']):
+				street_name=t[x]['long_name']
 
-	if t == 5:
-		city = r[0]['address_components'][1]['long_name'] 
-		district = r[0]['address_components'][2]['long_name']
-	if t == 4:
-		city = r[0]['address_components'][1]['long_name'] 
-		district = r[0]['address_components'][2]['long_name']
-	if t == 3:
-		#Not tested
-		city = r[0]['address_components'][1]['long_name'] 
+			if(t[x]['types']==['country', 'political']):
+				country=t[x]['short_name']
+			
 	
 	return street_name,city,district,country,latitude,longitude,fake_accuracy,error
 	
